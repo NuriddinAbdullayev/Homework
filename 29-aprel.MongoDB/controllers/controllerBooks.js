@@ -17,3 +17,9 @@ exports.createBook = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+exports.deleteAll = async(req, res) => {
+  await Book.deleteMany({});
+
+  res.send("deleted")
+}

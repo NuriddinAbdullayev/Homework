@@ -6,4 +6,6 @@ router.get("/books", controllerBooks.getBooks);
 
 router.post("/books", controllerBooks.createBook);
 
+router.delete("/delete", controllerBooks.deleteAll);
+
 module.exports = router;
