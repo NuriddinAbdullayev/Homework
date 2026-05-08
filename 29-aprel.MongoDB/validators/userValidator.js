@@ -9,8 +9,8 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  email:    z.string(),
-  password: z.string()
+  email:    z.string().email().trim(),
+  password: z.string().trim()
 });
 
 module.exports = {registerSchema, loginSchema};

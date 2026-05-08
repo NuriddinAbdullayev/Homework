@@ -1,30 +1,24 @@
 const User = require("../models/Users");
 const {registerSchema, loginSchema} = require("../validators/userValidator");
 const bcrypt = require("bcrypt");
-
-// exports.createUser = async (req, res) => {
-//   try {
-//     const user = await User.create(req.body);
-//     res.status(201).json(user);
-//   } catch(error) {
-//     res.status(500).json({error: error.message});
-//   }
-// }
+const {generateToken} = require("../utils/generateToken.js");
+const mongoose = require("mongoose");
 
 exports.registerUser = async (req, res) => {
   try {
     const validation = registerSchema.safeParse(req.body);
 
+    // Check the input 
     if (!validation.success) {
-      return res.status(400).json({message: error});
+      return res.status(400).json({ message: validation.error });
     }
 
-    const {name, surname, age, email, password} = req.body;
+    const { name, surname, age, email, password } = req.body;
 
-    const existingEmail = await User.findOne({email});
+    const existingEmail = await User.findOne({ email });
 
     if (existingEmail) {
-      return res.status(400).json({message: "User is registired!"});
+      return res.status(400).json({ message: "User is already registered!" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,46 +28,54 @@ exports.registerUser = async (req, res) => {
       surname,
       age,
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
-    res.status(201).json({message: "User registered", user: newUser});
+    res.status(201).json({
+      message: "User registered",
+      user: newUser,
+    });
 
   } catch (error) {
-    res.status(500).json({message: "server error"})
+    res.status(500).json({ message: "server error" });
   }
-}
+};
 
 exports.loginUser = async (req, res) => {
   try {
-    const validation = registerSchema.safeParse(req.body);
+    const validation = loginSchema.safeParse(req.body);
 
     if (!validation.success) {
-      return res.status(400).json({message: error});
+      return res.status(400).json({ message: validation.error.errors });
     }
 
-    const {email, password} = req.body; 
+    const { email, password } = validation.data; 
 
-    const existingEmail = await User.findone({email});
+    const user = await User.findOne({ email });
 
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.password) {
+      return res.status(500).json({ message: "User password missing in DB" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({message: "User is not found!"});
+      return res.status(401).json({ message: "Wrong password" });
     }
 
-    if (!existingEmail) {
-      res.status(400).json({message: "Bu email mavjud emas!"});
-    }
+    const token = generateToken(user)
 
-    res.status(200).json({message: "Login successfully1"});
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
-    
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
+
 
 exports.getUsers = async (req, res) => {
   try {
@@ -82,4 +84,17 @@ exports.getUsers = async (req, res) => {
   } catch(error) {
     res.status(500).json({ error: error.message });
   }
+}
+
+exports.profile = async (req, res) => {
+  res.status(200).json({
+    message: "Protected profile",
+    user: req.user
+  })
+}
+
+exports.deleteAll = async(req, res) => {
+  await User.deleteMany({});
+
+  res.send("deleted")
 }

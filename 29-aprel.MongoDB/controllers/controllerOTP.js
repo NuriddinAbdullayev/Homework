@@ -13,7 +13,7 @@ exports.sendOTP = async (req, res) => {
       return res.status(400).json({
         messade: "Email is required!"
       });
-    }
+    };
 
     const otp = Math.floor(100000 + Math.random() * 900000);
 
@@ -30,7 +30,7 @@ exports.sendOTP = async (req, res) => {
   } catch (error) {
     console.log(`Error: ${error}`);
     res.send(error);
-  }
+  };
 }
 
 exports.verifyOTP = async (req, res) => {
@@ -39,7 +39,7 @@ exports.verifyOTP = async (req, res) => {
     
     if (!email || !otp) {
       return res.status(400).json({message: "Email and OPT required"})
-    }
+    };
 
     if (storeOTP[email] === Number(otp)) {
       delete storeOTP[email];
@@ -47,17 +47,10 @@ exports.verifyOTP = async (req, res) => {
       return res.status(200).json({
         message: "OTP verified"
       });
-    }
-
-    console.log("Email:", email);
-console.log("Stored OTP:", storeOTP[email]);
-console.log("Type Stored:", typeof storeOTP[email]);
-console.log("Received OTP:", otp);
-console.log("Type Received:", typeof otp);
-console.log("Converted OTP:", Number(otp));
+    };
 
     res.status(400).json({message: "Invalid OTP"});
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
