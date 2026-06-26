@@ -19,9 +19,4 @@ export class ProductsController {
   createProduct(@Body() body: any) {
     return this.productsService.createProduct(body);
   }
-
-  @Delete(':id')
-  deleteProduct(@Param('id') id: string) {
-    return this.productsService.deleteProduct(Number(id));
-  }
 }

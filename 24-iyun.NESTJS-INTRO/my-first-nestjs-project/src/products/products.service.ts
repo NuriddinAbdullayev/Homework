@@ -36,16 +36,4 @@ export class ProductsService {
       product
     }
   }
-
-  deleteProduct(id: number) {
-    const index = this.products.findIndex((product) => product.id === id);
-
-    const deletedProduct = this.products[index];
-    this.products.slice(index, 1);
-
-    return {
-      message: "Product deleted!",
-      deletedProduct
-    };
-  }
 }
