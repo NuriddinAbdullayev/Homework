@@ -35,5 +35,31 @@ export class ProductsService {
       message: "Product created!",
       product
     }
+  };
+
+  updateProduct(id: number, body: any) {
+    const product = this.products.find(product => product.id === id);
+
+    if(!product) {
+      return { message: "Product not found!" }
+    }
+
+    product.title = body.title;
+    product.price = body.price;
+
+    return {
+      message: "Updated",
+      product,
+    }
+  };
+
+  deleteProduct(id: number) {
+    const index = this.products.findIndex(product => product.id === id);
+
+    this.products.splice(index, 1);
+
+    return {
+      message: "Deleted!"
+    }
   }
 }
