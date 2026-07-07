@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { bcrypt } from "bcrypt"
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProductDto } from './update-user.dto';
 import { CreateUserDto } from './create-user.dto';
+import { RegisterDto } from './dto/resigter.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,5 +37,63 @@ export class UsersService {
     return this.prisma.user.delete({
       where: { id }
     });
+  }
+
+  async register(body: RegisterDto) {
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        email: String(body.email),
+      }
+    });
+
+    if(existingUser) {
+      throw new BadRequestException(
+        "This Email already exist!"
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      body.password,
+      10
+    );
+
+    return this.prisma.user.create({
+      data: {
+        name: String(body.name),
+        email: String(body.email),
+        password: hashedPassword,
+        age: body.age
+      }
+    });
+  }
+
+  async login(body: LoginDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException(
+        'User not found',
+      );
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      body.password,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+        throw new BadRequestException(
+          'Incorrect password',
+        );
+    }
+
+    return {
+      message: 'Login successful',
+      user,
+    };
   }
 }

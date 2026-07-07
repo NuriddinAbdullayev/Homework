@@ -19,4 +19,8 @@ export class UpdateProductDto {
   @Max(100)
   @MinLength(1)
   age!: number;
+
+  @IsOptional()
+  @MinLength(8, { message: "Password must be at least 6 character" })
+  password!: string;
 }
