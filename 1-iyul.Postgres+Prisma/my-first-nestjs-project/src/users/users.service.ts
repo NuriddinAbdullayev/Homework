@@ -1,14 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { bcrypt } from "bcrypt"
+import * as bcrypt from "bcrypt";
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProductDto } from './update-user.dto';
 import { CreateUserDto } from './create-user.dto';
 import { RegisterDto } from './dto/resigter.dto';
 import { LoginDto } from './dto/login.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private authService: AuthService,
+  ) {}
 
   async getUsers() {
     return this.prisma.user.findMany();
@@ -91,9 +95,20 @@ export class UsersService {
         );
     }
 
+    const token = this.authService.generateToken({
+      id: user.id,
+
+      email: user.email
+    });
+
+    const { password, ...userWithoutPassword } = user;
+
     return {
       message: 'Login successful',
-      user,
-    };
+      
+      access_token: token,
+      
+      user: userWithoutPassword,
+    };    
   }
 }
