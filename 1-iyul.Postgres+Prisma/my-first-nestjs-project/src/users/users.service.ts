@@ -6,6 +6,7 @@ import { CreateUserDto } from './create-user.dto';
 import { RegisterDto } from './dto/resigter.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -65,6 +66,7 @@ export class UsersService {
       data: {
         name: String(body.name),
         email: String(body.email),
+        role: "USER",
         password: hashedPassword,
         age: body.age
       }
@@ -97,8 +99,8 @@ export class UsersService {
 
     const token = this.authService.generateToken({
       id: user.id,
-
-      email: user.email
+      email: user.email,
+      role: user.role,
     });
 
     const { password, ...userWithoutPassword } = user;
