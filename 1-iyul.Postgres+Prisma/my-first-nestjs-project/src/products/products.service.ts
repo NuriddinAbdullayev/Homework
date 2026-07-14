@@ -8,12 +8,23 @@ export class ProductsService {
   constructor(private prisma: PrismaService){}
 
   async getProducts() {
-    return this.prisma.product.findMany();
+    const products = await this.prisma.product.findMany();
+
+    return products.map((product) => ({
+      ...product,
+      image: product.image
+        ? `http://localhost:3000/uploads/${product.image}`
+        : null,
+    }));
   }
 
-  async createProduct(body: CreateProductDto) {
+  async createProduct(body: CreateProductDto, image: string) {
     return this.prisma.product.create({
-      data: body,
+      data: {
+        title: body.title,
+        price: Number(body.price),
+        image
+      }
     });
   }
 

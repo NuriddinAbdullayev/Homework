@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { UpdateProductDto } from './update-product.dto';
 import { CreateProductDto } from './create-product.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -14,10 +17,36 @@ export class ProductsController {
     return this.productsService.getProducts();
   }
 
+  // upload with image
   @Post()
-  createProduct(@Body() body: CreateProductDto) {
-    return this.productsService.createProduct(body);
-  }
+    @UseInterceptors(
+      FileInterceptor(
+        "image",
+        {
+          storage: diskStorage({
+            destination: "./uploads",
+            filename: (req, file, cb) => {
+              const uniqueName = Date.now() + extname(file.originalname);
+              cb(
+                null, 
+                uniqueName,
+              )
+            }
+          })
+        }
+      )
+    )
+    createProduct(
+      @UploadedFile()
+      file: Express.Multer.File,
+      @Body()
+      body: any,
+    ) {
+      return this.productsService.createProduct(
+        body, 
+        file.filename,
+      );
+    }
 
   @Get(":id")
   getProduct(@Param("id") id: string) {
