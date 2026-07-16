@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { UpdateProductDto } from './update-product.dto';
 import { CreateProductDto } from './create-product.dto';
@@ -11,6 +11,40 @@ import { extname } from 'path';
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
+
+  @Get()
+  getProductsByQuery(
+    @Query('search')
+    search?: string,
+    @Query("minPrice")
+    minPrice?:string,
+    @Query("maxPrice")
+    maxPrice?:string,
+    @Query("sort")
+    sort?:string,
+  ) {
+    return this.productsService.getProductsByQuery(
+      search,
+      minPrice,
+    )
+  }
+
+  @Get()
+  getProductsByQuery2(
+    @Query('search')
+    search?: string,
+    @Query("minPrice")
+    minPrice?:string,
+    @Query("page")
+    page?:string,
+    @Query("limit")
+    limit?:string,
+  ) {
+    return this.productsService.getProductsByQuery2(
+      search,
+      minPrice,
+    )
+  }
 
   @Get()
   getProducts() {

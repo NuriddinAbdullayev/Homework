@@ -7,6 +7,52 @@ import { UpdateProductDto } from './update-product.dto';
 export class ProductsService {
   constructor(private prisma: PrismaService){}
 
+  async getProductsByQuery(
+    search?: string,
+    minPrice?:string,
+    maxPrice?:string,
+    sort?:string,
+  ) {
+    return this.prisma.product.findMany({
+      where: {
+        title: {
+          contains: search,
+          mode: 'insensitive',
+        },
+        price: { 
+          gte: minPrice ? Number(minPrice) : undefined,
+          lte: maxPrice ? Number(maxPrice) : undefined, 
+        }, 
+      },    
+
+      orderBy: {
+        price: sort === "desc" ? "desc" : "asc",
+      },
+    });
+  }
+
+  async getProductsByQuery2(
+    search?: string,
+    minPrice?: string,
+    page?: string,
+    limit?: string,
+  ) {
+    const currentPage = Number(page) || 1;
+    const take = Number(limit) || 5;
+    const skip = (currentPage - 1) * take;
+    
+    const products = await this.prisma.product.findMany({
+      where: {
+        title: {
+          endsWith: search,
+          mode: "insensitive",
+        },
+      },
+      skip,
+      take,
+    })
+  }
+
   async getProducts() {
     const products = await this.prisma.product.findMany();
 
