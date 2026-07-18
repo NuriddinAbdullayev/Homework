@@ -24,6 +24,7 @@ model Product{
   title String
   price Float
   image String?
+  products Product[]
 }
 
 model User{
@@ -34,4 +35,20 @@ model User{
   password String
   role Role @default(USER)
   image String?
+  user User @relation(
+    fields:[userId],
+    references:[id],
+  )
+}
+
+model Student {
+  id Int @id @default(autoincrement())
+  name String
+  courses Course[]
+}
+
+model Course {
+  id Int @id @default(autoincrement())
+  title String
+  student Student[]
 }

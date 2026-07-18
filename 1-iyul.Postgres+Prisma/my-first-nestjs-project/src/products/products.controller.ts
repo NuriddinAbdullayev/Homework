@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { UpdateProductDto } from './update-product.dto';
-import { CreateProductDto } from './create-product.dto';
+// import { CreateProductDto } from './create-product.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
