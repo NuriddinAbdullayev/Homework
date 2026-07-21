@@ -7,7 +7,7 @@ export class StudentsService {
 
   getStudents() {
     return this.prisma.student.findMany({
-      inclue: {
+      include: {
         courses: true,
       }
     })
