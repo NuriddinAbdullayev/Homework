@@ -30,7 +30,6 @@ export default function RootLayout({
 
         {/* FOOTER */}
         <footer style={{ padding: '1rem', background: '#f1f1f1', textAlign: 'center', borderTop: '1px solid #ddd' }}>
-          <p>© 2026 Barcha huquqlar himoyalangan.</p>
         </footer>
 
       </body>
